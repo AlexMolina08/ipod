@@ -81,7 +81,24 @@ class _MyIpodState extends State<MyIpod> {
                         ),
                         alignment: Alignment.centerRight,
                         margin: EdgeInsets.only(right: 30),
-                      )
+                      ),
+                      Container(
+                        child: IconButton(
+                          icon: Icon(Icons.fast_rewind),
+                          iconSize: 40.0,
+                          onPressed: () => _pageCtrl.animateToPage(
+                              (_pageCtrl.page + 1).toInt(),
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeIn),
+                        ),
+                        alignment: Alignment.centerLeft,
+                        margin: EdgeInsets.only(left: 30),
+                      ),
+                      Container(
+                        child: Icon(Icons.play_arrow , size: 40.0,),
+                        alignment: Alignment.bottomCenter,
+                        margin: EdgeInsets.only(bottom: 30),
+                      ),
                     ],
                   ),
                 ),
