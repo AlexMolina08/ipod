@@ -49,7 +49,7 @@ class _MyIpodState extends State<MyIpod> {
             child: PageView.builder(
               controller: _pageCtrl,
               scrollDirection: Axis.horizontal,
-              itemCount: 9,
+              itemCount: 5,
               itemBuilder: (context , int currentIndx){
                 return AlbumCard(
                   color: Colors.accents[currentIndx],
@@ -80,7 +80,28 @@ class AlbumCard extends StatelessWidget {
     return Container(
       width: 250,
       child: Transform(
-        transform: Matrix4.identity(),
+        transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.003) //añadir perspectiva
+            ..scale((1-relativePosition.abs()).clamp(0.2, 0.6)+0.4)
+            ..rotateY(relativePosition),
+
+        alignment:  relativePosition >= 0
+          ? Alignment.centerLeft
+          : Alignment.centerRight,
+
+        child: Container(
+          margin: EdgeInsets.fromLTRB(5,20,5,20),
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: color,
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: AssetImage('images/album$currentIndx.jpg')
+            )
+          ),
+        )
+
       ),
     );
   }
