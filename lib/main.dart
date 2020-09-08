@@ -29,8 +29,59 @@ class _MyIpodState extends State<MyIpod> {
   double currentPage = 0.0;
 
   @override
+  void initState() {
+    _pageCtrl.addListener(() {
+      setState(() {
+        currentPage = _pageCtrl.page;
+      });
+    });
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    return Container();
+    return SafeArea(
+      child: Column(
+        children: <Widget>[
+          Container(
+            height: 300.0,
+            color: Colors.black,
+            child: PageView.builder(
+              controller: _pageCtrl,
+              scrollDirection: Axis.horizontal,
+              itemCount: 9,
+              itemBuilder: (context , int currentIndx){
+                return AlbumCard(
+                  color: Colors.accents[currentIndx],
+                  currentIndx: currentIndx,
+                  currentPage : currentPage
+                );
+              },
+            )
+          )
+        ],
+      ),
+    );
   }
 }
 
+class AlbumCard extends StatelessWidget {
+
+  final Color color;
+  final int currentIndx;
+  final double currentPage;
+
+  AlbumCard({this.color,this.currentPage,this.currentIndx});
+
+  @override
+  Widget build(BuildContext context) {
+    double relativePosition = currentIndx - currentPage;
+
+    return Container(
+      width: 250,
+      child: Transform(
+        transform: Matrix4.identity(),
+      ),
+    );
+  }
+}
