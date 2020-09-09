@@ -49,73 +49,110 @@ class _MyIpodState extends State<MyIpod> {
                       currentPage: currentPage);
                 },
               )),
-          Spacer(),
+          SizedBox(height: 120.0),
           Center(
-              child: Stack(
-            alignment: Alignment.center,
-            children: [
-              GestureDetector(
-                onPanUpdate: (e) => null,
-                child: Container(
-                  height: 300.0,
-                  width: 300.0,
+              child: Stack(alignment: Alignment.center,
+              children: [
+                GestureDetector(
+                  onPanUpdate: (e) => _panHandler(e),
+                  child: Container(
+                    height: 300.0,
+                    width: 300.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black,
+                    ),
+                    child: Stack(
+                      children: [
+                        Container(
+                          child: Text('MENU',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold)),
+                          alignment: Alignment.topCenter,
+                          margin: EdgeInsets.only(top: 36),
+                        ),
+                        Container(
+                          child: IconButton(
+                            icon: Icon(Icons.fast_forward),
+                            iconSize: 40.0,
+                            onPressed: () => _pageCtrl.animateToPage(
+                                (_pageCtrl.page + 1).toInt(),
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeIn),
+                          ),
+                          alignment: Alignment.centerRight,
+                          margin: EdgeInsets.only(right: 30),
+                        ),
+                        Container(
+                          child: IconButton(
+                            icon: Icon(Icons.fast_rewind),
+                            iconSize: 40.0,
+                            onPressed: () => _pageCtrl.animateToPage(
+                                (_pageCtrl.page - 1).toInt(),
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeIn),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          margin: EdgeInsets.only(left: 30),
+                        ),
+                        Container(
+                          child: Icon(
+                            Icons.play_arrow,
+                            size: 40.0,
+                          ),
+                          alignment: Alignment.bottomCenter,
+                          margin: EdgeInsets.only(bottom: 30),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 100.0,
+                  width: 100.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.black,
+                    color: Colors.white38,
                   ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        child: Text('MENU',style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold)),
-                        alignment: Alignment.topCenter,
-                        margin: EdgeInsets.only(top: 36),
-                      ),
-                      Container(
-                        child: IconButton(
-                          icon: Icon(Icons.fast_forward),
-                          iconSize: 40.0,
-                          onPressed: () => _pageCtrl.animateToPage(
-                              (_pageCtrl.page + 1).toInt(),
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeIn),
-                        ),
-                        alignment: Alignment.centerRight,
-                        margin: EdgeInsets.only(right: 30),
-                      ),
-                      Container(
-                        child: IconButton(
-                          icon: Icon(Icons.fast_rewind),
-                          iconSize: 40.0,
-                          onPressed: () => _pageCtrl.animateToPage(
-                              (_pageCtrl.page + 1).toInt(),
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeIn),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.only(left: 30),
-                      ),
-                      Container(
-                        child: Icon(Icons.play_arrow , size: 40.0,),
-                        alignment: Alignment.bottomCenter,
-                        margin: EdgeInsets.only(bottom: 30),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                height: 100.0,
-                width: 100.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white38,
-                ),
-              )
+                )
             ],
           )),
         ],
       ),
     );
+  }
+
+  void _panHandler(DragUpdateDetails d) {
+    double radius = 150;
+
+    //sabemos que el user está arriba del circulo si la posicion local es <= al radio
+    bool onTop = d.localPosition.dy <= radius;
+    bool onLeftSide = d.localPosition.dx <= radius;
+    bool onRightSide = !onLeftSide;
+    bool onBottom = !onTop;
+
+    //Panel Movements
+
+    bool panUp = d.delta.direction <= 0.0;
+    bool panelLeft = d.delta.dx <= 0.0;
+    bool panRight = !panelLeft;
+    bool panDown = !panUp;
+
+    //Absolute change on axis
+    double yChange = d.delta.dy.abs();
+    double xChange = d.delta.dx.abs();
+
+    double verticalRotation = (onRightSide && panDown) || (onLeftSide && panUp)
+        ? yChange
+        : xChange * -1;
+
+    double horizontalRotation =
+        (onTop & panRight) || (onBottom && panelLeft) ? yChange : xChange * -1;
+
+    double rotationalChange =
+        (verticalRotation + horizontalRotation) * (d.delta.distance * 0.2);
+
+    _pageCtrl.jumpTo(_pageCtrl.offset + rotationalChange);
   }
 }
 
